@@ -3,11 +3,11 @@ const axios = require('axios');
 
 class Party {
     updateName(newName) {
+        //Make sure that the name isn't empty
         if (newName === null || newName === '') {
             throw "Must have a name";
         }
         this.name = newName;
-        console.log(this.name);
     }
 
     updateLocation(newLocation) {
@@ -17,15 +17,14 @@ class Party {
         //    throw "Party must have a location";
         //}
         this.location = newLocation
-        console.log(this.location);
     }
 
     updateGames(newGames) {
+        //Make sure that the games aren't empty
         if (newGames === null) {
             throw "Party must have games"
         }
         this.games = newGames;
-        console.log(this.games);
     }
 
     constructor(name, host, games, location) {
@@ -34,11 +33,9 @@ class Party {
         this.updateGames(games);
         this.updateLocation(location);
         this.id = uuidv4();
-        console.log(this.id);
     }
 }
 
 var myParty = new Party('gaem', 'me', ['Don starrv', 'Kingdome herts'], 'home');
-console.log(myParty);
 axios.post('http://localHost:3001/profile', myParty) //Window.navigator.geolocation.getCurrentPosition()))    Can't get until frontend is done
     .then(console.log('finished!'));
