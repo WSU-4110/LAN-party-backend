@@ -1,0 +1,21 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "json-server",
+      "author": "typicode"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "email": "gj3842@wayne.edu",
+    "salt": "$2a$10$wleFmCH95SxU6WMd.pPqz.",
+    "password": "$2a$10$wleFmCH95SxU6WMd.pPqz.3igBl6iex6KA.PhfrqctIGG880DPRd2"
+  }
+}
