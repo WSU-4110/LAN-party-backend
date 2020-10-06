@@ -27,15 +27,25 @@ class Party {
         this.games = newGames;
     }
 
-    constructor(name, host, games, location) {
+    updateTime(newTime) {
+        //Ensure that the time exists and is in the future
+        if (newTime === null || newTime <= Date.now()) {
+            throw 'The party must have a time in the future';
+        }
+
+        this.time = newTime;
+    }
+
+    constructor(name, host, games, location, time) {
         this.updateName(name);
         this.host = host;
         this.updateGames(games);
         this.updateLocation(location);
         this.id = uuidv4();
+        this.updateTime(time);
     }
 }
 
-var myParty = new Party('gaem', 'me', ['Don starrv', 'Kingdome herts'], 'home');
+var myParty = new Party('gaem', 'me', ['Don starrv', 'Kingdome herts'], 'home', Date.now() + 50000000);
 axios.post('http://localHost:3001/profile', myParty) //Window.navigator.geolocation.getCurrentPosition()))    Can't get until frontend is done
     .then(console.log('finished!'));
