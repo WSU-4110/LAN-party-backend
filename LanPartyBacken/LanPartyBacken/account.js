@@ -1,5 +1,5 @@
-const axios = require('axios');
-const bcrypt = require('bcryptjs');
+import axios from 'axios'
+import bcrypt from 'bcryptjs'
 
 class User {
     updatePassword(password) {
