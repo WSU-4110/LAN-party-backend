@@ -4,9 +4,11 @@ import bcrypt from 'bcryptjs'
 class User {
     updatePassword(password) {
 
-        //For now, lets assume that any password that isn't empty is good.
-        if (password === null || password === "") {
-            throw 'Invalid password';
+        //Regex for numbers, uppercase and lowercase letters
+        const REQUIRED_CHARACTERS = /[0-9]*[A-Z]*[a-z]/
+        //If the password isn't long enough or has no numbers or uppercase letters
+        if (password.length < 8 || !password.match(REQUIRED_CHARACTERS)) {
+            throw 'Invalid password. Must use at least 8 characters and have a number, uppercase, and lowercase letters';
         } else {
 
             //Update the salt
@@ -20,6 +22,9 @@ class User {
     constructor(email, password) {
         this.email = email;
         this.updatePassword(password);
+        this.steamKey = null;
+        this.gogKey = null;
+        this.discordKey = null;
     }
 }
 
@@ -33,7 +38,7 @@ class User {
 
 
 function createAccount() {
-    var newUser = new User('gj3842@wayne.edu', 'p4ssw0rd!')
+    var newUser = new User('gj3842@wayne.edu', 'P4ssword!')
             
     //Put the new account into the server
     axios.post('http://localHost:3001/profile', newUser)
