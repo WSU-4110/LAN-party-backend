@@ -1,5 +1,5 @@
 {
-  "type": "module",
+  "type": "commonjs",
   "name": "lan-party-backen",
   "version": "0.0.0",
   "description": "LanPartyBacken",
@@ -11,7 +11,8 @@
     "axios": "^0.20.0",
     "bcryptjs": "^2.4.3",
     "esm": "^3.2.25",
-    "json-server": "^0.16.2"
+    "json-server": "^0.16.2",
+    "uuid": "^8.3.1"
   },
   "scripts": {
     "server": "json-server -p3001 --watch db.json",

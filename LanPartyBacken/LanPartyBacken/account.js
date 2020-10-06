@@ -1,5 +1,5 @@
-import axios from 'axios'
-import bcrypt from 'bcryptjs'
+const axios = require('axios')
+const bcrypt = require('bcryptjs')
 
 class User {
     updatePassword(password) {
@@ -27,13 +27,6 @@ class User {
         this.discordKey = null;
     }
 }
-
-////Fetch the info
-//const fetchInfo = axios.get('http://localHost:3001/comments')
-//    .then(comments => { //If the request is made
-//        //Display comments in the console
-//        console.log(comments.data);
-//    });
 
 
 
