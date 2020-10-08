@@ -28,8 +28,19 @@ const User = {
     },
 
     
-    generateCookie: () => {
-        this.cookie = 'hallo';
+    generateCookie: async (user, cookie) => {
+        return new Promise((resolve) =>{
+        user.cookie = {};
+        //Send the cookie to the front end
+        bcrypt.genSalt().then((salt) => {
+            user.cookie.salt = salt;
+            bcrypt.hash(cookie, salt).then((hash) => {
+                user.cookie.hash = hash;
+                resolve(user);
+                
+            })
+        })})
+        
     },
     
 
@@ -49,7 +60,7 @@ const User = {
             User.id = uuidv4();
             //Generate a login cookie. 
             //NEEDS TO BE IMPROVED
-            User.generateCookie();
+            User.generateCookie(User, 'Cookie');
 
             //This is both the longest segment due to the salt + hash
             //And the final function before finalizing the user info.
@@ -60,7 +71,18 @@ const User = {
     })},
 }
 
+async function updateCookie(email, cookie){
+    var user = axios.get('http://localHost:3001/profile/').then((user) => {
+        user = user.data;
 
+        User.generateCookie(user, cookie).then((updated) =>{
+        
+        axios.post('http://localHost:3001/profile', updated)
+            .then(console.log('cookie updated'))
+            .catch((e)=>{console.log(e)})
+        })});
+    
+}
 
 function createAccount(email, password) {
     //Create a new user object
@@ -75,8 +97,11 @@ function createAccount(email, password) {
             .then(console.log('finished!'))
             .catch('Cannot create a new account. Sorry!')
         .catch((e)=>{console.log(e)});
+
+        
+    updateCookie('gj3842@wayne.edu', 'newCookie');
     });
 
 };
 
-createAccount('gj3842@wayne.edu', 'P4ssw0rd!')
+createAccount('gj3842@wayne.edu', 'P4ssw0rd!');
