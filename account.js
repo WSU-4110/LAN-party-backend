@@ -1,11 +1,12 @@
 const axios = require('axios')
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4, stringify } = require('uuid');
 const bcrypt = require('bcryptjs');
 const { create } = require('json-server');
 
-let User = {
-    updatePassword(password) {
-
+const User = {
+    updatePassword: async (password) => {
+        console.log(User)
+        return new Promise( resolve =>{
         //Regex for numbers, uppercase and lowercase letters
         const REQUIRED_CHARACTERS = /[0-9]*[A-Z]*[a-z]/
 
@@ -13,43 +14,68 @@ let User = {
         if (password.length < 8 || !password.match(REQUIRED_CHARACTERS)) {
             throw 'Invalid password. Must use at least 8 characters and have a number, uppercase, and lowercase letters';
         } else {
-            //Update the salt
-            this.salt = bcrypt.genSaltSync();
-
-            //Update the password
-            this.password = bcrypt.hashSync(password, this.salt);
-        }
+            //Create the salt
+            bcrypt.genSalt().then((salt) =>{
+                //Hash the value
+                bcrypt.hash(password,salt).then((hash) => {
+                    //Store the values
+                    User.password = hash;
+                    User.salt = salt;
+                    resolve(this);
+                })
+            })
+        }});   
     },
 
     
-    generateCookie(){
+    generateCookie: () => {
         this.cookie = 'hallo';
     },
     
 
-    User(email, password){
-        newUser = User;
-        //Check that the email 
-        newUser.email = email;
-        newUser.updatePassword(password);
-        newUser.steamKey = null;
-        newUser.gogKey = null;
-        newUser.discordKey = null;
-        newUser.id = uuidv4();
-        newUser.generateCookie();
-        return newUser;
-    }
+    initialize: async (newEmail, newPassword) => {
+        
+        //Prevent the Note from being sent too early by sending a promise.
+        return new Promise((resolve) =>{
+            //Set the email in plain text
+            User.email = newEmail;
+            
+            //Set the keys as null to begin with
+            User.steamKey = null;
+            User.gogKey = null;
+            User.discordKey = null;
+
+            //Create an ID
+            User.id = uuidv4();
+            //Generate a login cookie. 
+            //NEEDS TO BE IMPROVED
+            User.generateCookie();
+
+            //This is both the longest segment due to the salt + hash
+            //And the final function before finalizing the user info.
+            //Await wasn't working here, hence the resolve.
+            User.updatePassword(newPassword).then( () => {
+                resolve(User);
+            });
+    })},
 }
 
 
 
 function createAccount(email, password) {
-    var newUser = User.User(email, password);
-            
-    //Put the new account into the server
-    axios.post('http://localHost:3001/profile', newUser)
-        .then(console.log('finished!'))
-        .catch('Cannot create a new account. Sorry!');
+    //Create a new user object
+    var newUser = new Object(User);
+    console.log(newUser);
+    //Update its information
+    newUser.initialize(email, password)
+    .then(()=> {
+
+        //Put the new account into the server
+        axios.post('http://localHost:3001/profile', newUser)
+            .then(console.log('finished!'))
+            .catch('Cannot create a new account. Sorry!')
+        .catch((e)=>{console.log(e)});
+    });
 
 };
 
