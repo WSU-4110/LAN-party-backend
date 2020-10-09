@@ -1,5 +1,6 @@
 'use strict';
 
+const bcrypt = require('bcryptjs'); //Encryption
 const Joi = require("joi"); // package used for validating data types and patterns (using regex)
 const dynamoDB = require("./dynamodb/live_dynamodb"); // DynamoDb instance
 const moment = require("moment-timezone"); // for time accuracy
@@ -67,15 +68,21 @@ module.exports = {
       const current_life_moment = moment() //current time
       .tz("America/Detroit")
       .format("YYYY-MM-DD hh:mm a"); // <-- a for EDT
-  
+      
+      //Create a salt value
+      let salt = await bcrypt.genSalt();
+      //Hash the password
+      let password = await bcrypt.hash(request_data.password, salt);
+
       // if email is valid, then sign user up for our servive
       const parameters = {
         TableName: "users",
-  
+        
         Item: { 
           Username: request_data.username,
           Email: request_data.email.toLowerCase(),
-          Password: request_data.password, // !! WORKING ON ENCRYPTION ATM !!
+          Salt: salt,
+          Password: password, 
           CreateDate: current_life_moment,
         },
       };
@@ -133,8 +140,11 @@ signin : async function (event) {
         body: JSON.stringify("Error : Email not registered - Register for a new acount"),
       };
     }
-
-    if (is_exsisting.Item.password === request_data.password){
+    
+    //Hash the incoming password
+    let rehash = await bcrypt.hash(request_data.password, is_exsisting.Item.Salt);
+    //Check if it matches
+    if (is_exsisting.Item.password === rehash){
 
       return {
         // new user was successfully created //
