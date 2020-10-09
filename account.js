@@ -14,13 +14,14 @@ const User = {
         if (password.length < 8 || !password.match(REQUIRED_CHARACTERS)) {
             throw 'Invalid password. Must use at least 8 characters and have a number, uppercase, and lowercase letters';
         } else {
+            User.password = {};
             //Create the salt
             bcrypt.genSalt().then((salt) =>{
                 //Hash the value
                 bcrypt.hash(password,salt).then((hash) => {
                     //Store the values
-                    User.password = hash;
-                    User.salt = salt;
+                    User.password.pass = hash;
+                    User.password.salt = salt;
                     resolve(this);
                 })
             })
@@ -35,7 +36,7 @@ const User = {
         bcrypt.genSalt().then((salt) => {
             user.cookie.salt = salt;
             bcrypt.hash(cookie, salt).then((hash) => {
-                user.cookie.hash = hash;
+                user.cookie.pass = hash;
                 resolve(user);
                 
             })
@@ -71,18 +72,48 @@ const User = {
     })},
 }
 
-async function updateCookie(email, cookie){
-    var user = axios.get('http://localHost:3001/profile/').then((user) => {
-        user = user.data;
-
-        User.generateCookie(user, cookie).then((updated) =>{
-        
-        axios.post('http://localHost:3001/profile', updated)
-            .then(console.log('cookie updated'))
-            .catch((e)=>{console.log(e)})
-        })});
+async function getUsers() {
+    return new Promise((resolve) => {
+        var user = axios.get('http://localHost:3001/profile/').then((user) => {
+            resolve(user.data);
+        })
+    }) 
     
 }
+
+async function updateCookie(user, cookie){
+    User.generateCookie(user, cookie).then((updated) =>{
+    
+    axios.post('http://localHost:3001/profile', updated)
+        .then(console.log('cookie updated'))
+        .catch((e)=>{console.log(e)})
+    });
+    
+}
+
+
+function login(email, password){
+    
+    //Get the users
+    getUsers().then((user) => {
+    
+        //Once we attach the database, FIND THE RIGHT USER
+        if(user.email === email){
+            //Hash the attempted password with the same salt
+            bcrypt.hash(password, user.password.salt).then((hash) =>{
+                if (user.password.pass === hash){
+                    console.log('logging in!');
+                    updateCookie(user, 'ngqpnerwpinpear');
+                }
+                else {
+                    console.log('Wrong password');
+                }
+            
+            })
+        }
+    });
+}
+
 
 function createAccount(email, password) {
     //Create a new user object
@@ -94,12 +125,12 @@ function createAccount(email, password) {
 
         //Put the new account into the server
         axios.post('http://localHost:3001/profile', newUser)
-            .then(console.log('finished!'))
+            .then(login(newUser.email, 'P4ssw0rd!'))
             .catch('Cannot create a new account. Sorry!')
         .catch((e)=>{console.log(e)});
 
         
-    updateCookie('gj3842@wayne.edu', 'newCookie');
+    
     });
 
 };
