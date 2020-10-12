@@ -204,6 +204,10 @@ resources:
             AttributeType: S
           - AttributeName: Time
             AttributeType: S
+          - AttributeName: AgeGate
+            AttributeType: B
+          - AttributeName: ServesAlcohol
+            AttributeType: B
         KeySchema:
           - AttributeName: ID
             KeyType: HASH
