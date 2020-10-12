@@ -198,6 +198,8 @@ resources:
             AttributeType: S
           - AttributeName: Attendees
             AttributeType: SS
+          - AttributeName: Games
+            AttributeType: SS
           - AttributeName: Location
             AttributeType: S
           - AttributeName: Time
