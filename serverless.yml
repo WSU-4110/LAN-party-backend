@@ -99,7 +99,7 @@ functions:
         cors: true
 
   ViewParty:
-    handler: handlers/party.ViewParty
+    handler: handlers/party.Get
     events:
       http:
         method: GET
@@ -107,11 +107,19 @@ functions:
         cors: true
 
   ViewAllParties:
-    handler: handlers/party.ViewAllParties
+    handler: handlers/party.GetAll
     events:
       http:
         method: GET
         path: /Parties
+        cors: true
+  
+  UpdateParty:
+    handler: handlers/party.Update
+    events:
+      http:
+        method: POST
+        path: /Party/{ID}/Update
         cors: true
 
 #Tables for Users
@@ -186,9 +194,13 @@ resources:
             AttributeType: S
           - AttributeName: Name
             AttributeType: S
+          - AttributeName: Host
+            AttributeType: S
+          - AttributeName: Attendees
+            AttributeType: SS
           - AttributeName: Location
             AttributeType: S
-          -  AttributeName: Time
+          - AttributeName: Time
             AttributeType: S
         KeySchema:
           - AttributeName: ID
