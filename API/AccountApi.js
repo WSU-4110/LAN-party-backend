@@ -4,6 +4,8 @@ const bcrypt = require('bcryptjs'); //Encryption
 const Joi = require("joi"); // package used for validating data types and patterns (using regex)
 const dynamoDB = require("./dynamodb/live_dynamodb"); // DynamoDb instance
 const moment = require("moment-timezone"); // for time accuracy
+const { v4: uuidv4, stringify } = require('uuid');
+
 
 module.exports = {
 
@@ -69,20 +71,26 @@ module.exports = {
       .tz("America/Detroit")
       .format("YYYY-MM-DD hh:mm a"); // <-- a for EDT
       
-      //Create a salt value
-      let salt = await bcrypt.genSalt();
-      //Hash the password
-      let password = await bcrypt.hash(request_data.password, salt);
+      //Create a salt value. Make sure it's done before password is started
+      let salt = await bcrypt.genSalt().promise();
+      //Hash the password. Make sure it's done before putting the items into the table
+      let password = await bcrypt.hash(request_data.password, salt).promise();
+      
+      //Create a unique id
+      let id = uuidv4();
+      //Create a random string for the cookie.
 
-      // if email is valid, then sign user up for our servive
+
+      // if email is valid, then sign user up for our service
       const parameters = {
         TableName: "users",
         
         Item: { 
+          ID: id,
           Username: request_data.username,
           Email: request_data.email.toLowerCase(),
+          Password: password,
           Salt: salt,
-          Password: password, 
           CreateDate: current_life_moment,
         },
       };
