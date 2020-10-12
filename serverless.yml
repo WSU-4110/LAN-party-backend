@@ -1,35 +1,26 @@
-# Welcome to Serverless!
-#
-# This file is the main config file for your service.
-# It's very minimal at this point and uses default values.
-# You can always add more config options for more control.
-# We've included some commented out config examples here.
-# Just uncomment any of them to get that config option.
-#
-# For full config options, check the docs:
-#    docs.serverless.com
-#
-# Happy Coding!
+# PROPERTY OF ONLY LANS
+
+# this file is the main config file for our service
+# for full config options, make sure to check the docs: docs.serverless.com
 
 service: only-lans
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
 
-# You can pin your service to only deploy with a specific Serverless version
-# Check out our docs for more details
+# we can pin our service to only deploy with a specific Serverless version
 frameworkVersion: '2'
 
 provider:
   name: aws
-  logRetentionInDays: 30 # Avoid meaningless bills
+  logRetentionInDays: 30 # avoid meaningless bills
   memorySize: 512
   stage: test
   versionFunctions: false
   runtime: nodejs12.x
   region: us-east-2
 
-  # Giving users appropriate permissions to the database, parameters ,and any other resources they may need for this service
+  # giving users appropriate permissions to the database, parameters, and any other resources they may need for this service
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -47,38 +38,75 @@ provider:
       Resource: "*"
 
 functions:
+
+  # account functions
   SignUp:
-    handler: API/AccountApi.signup
+    handler: handlers/account.SignUp
     events:
       - http:
           method: POST
-          path: /sign_up
+          path: /SignUp
           cors: true
 
   SignIn:
-    handler: API/AccountApi.signin
+    handler: handlers/account.SignIn
     events:
       - http:
           method: POST
-          path: /sign_in
+          path: /SignIn
           cors: true
 
+  ViewAccount:
+    handler: handlers/account.View
+    events:
+      - http:
+          method: GET
+          path: /Account/{ID}
+          cors: true
+
+  # game functions
+  ViewGame:
+    handler: handlers/game.ViewGame
+    events:
+      - http:
+          method: GET
+          path: /Game/{ID}
+          cors: true
+
+  ViewAllGames:
+    handler: handlers/game.ViewAllGames
+    events:
+      - http:
+          method: GET
+          path: /Games
+          cors: true
+
+  CreateGame:
+    handler: handlers/game.Create
+    events:
+      - http:
+          method: GET
+          path: /CreateGame
+          cors: true
+
+  # party functions
+
+#Tables for Users
 resources:
  Resources:
     users:
       Type: "AWS::DynamoDB::Table"
       Properties:
-        TableName: LAN-party-User
+        TableName: USERS-LAN
         AttributeDefinitions:
-          - AttributeName: Email
+          - AttributeName: ID
             AttributeType: S
           - AttributeName: Username 
             AttributeType: S
-          - AttributeName: Password 
+          - AttributeName: Email 
             AttributeType: S
-          - AttributeName: Friends 
         KeySchema:
-          - AttributeName: Email
+          - AttributeName: ID
             KeyType: HASH
         GlobalSecondaryIndexes:
           - IndexName: Username
@@ -87,40 +115,78 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
+          - IndexName: Email
+            KeySchema:
+              - AttributeName: Email
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
 
+    #Tables for games
     games:
       Type: "AWS::DynamoDB::Table"
       Properties:
-        TableName: LAN-party-Game
+        TableName: GAMES-LAN
         AttributeDefinitions:
+          - AttributeName: ID
+            AttributeType: S
           - AttributeName: Name
             AttributeType: S
-          - AttributeName: Genre 
-            AttributeType: S
-        KeySchema:
-          - AttributeName: Name
-            KeyType: HASH
-        BillingMode: PAY_PER_REQUEST
-
-    parties:
-      Type: "AWS::DynamoDB::Table"
-      Properties:
-        TableName: LAN-party-Party
-        AttributeDefinitions:
-          - AttributeName: Location
-            AttributeType: S
-          - AttributeName: Date 
-            AttributeType: S
-          - AttributeName: HostID 
-            AttributeType: N
-          - AttributeName: Status 
-            AttributeType: S
-          - AttributeName: Intent 
-            AttributeType: S
-          - AttributeName: Notes 
+          - AttributeName: Genre
             AttributeType: S
         KeySchema:
           - AttributeName: ID
             KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: Name
+            KeySchema:
+              - AttributeName: Name
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: Genre
+            KeySchema:
+              - AttributeName: Genre
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+    
+    #Parties table
+    parties:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: PARTIES-LAN
+        AttributeDefinitions:
+          - AttributeName: ID
+            AttributeType: S
+          - AttributeName: Name
+            AttributeType: S
+          - AttributeName: Location
+            AttributeType: S
+          -  AttributeName: Time
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ID
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: Name
+            KeySchema:
+              - AttributeName: Name
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: Location
+            KeySchema:
+              - AttributeName: Location
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: Time
+            KeySchema:
+              - AttributeName: Time
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
