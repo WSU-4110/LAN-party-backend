@@ -2,9 +2,8 @@
 
 // Imports
 const PartyAPI = require("../services/PartyAPI");
-const moment = require("moment-timezone");
 const responseUtil = require("../utilities/response");
-const { v4: uuidv4, stringify } = require('uuid');
+const shortid = require("shortid");
 
 
 module.exports = {
@@ -35,9 +34,18 @@ module.exports = {
         return responseUtil.Build(403, 'Party must have a time');
       };
 
-      //Insert the item into the table
+      //Ensure all data on the item is what we need
+      let newParty = {};
+      newParty.Name = request.name;
+      newParty.Host = request.user; //Host is the user making the request.
+      newParty.Games = null;
+      newParty.Location = request.location;
+      newParty.Time = request.time;
+      newParty.Attendees = [newParty.Host];
+      newParty.AgeGate = request.ageGate;
+      newParty.ServesAlcohol = request.servesAlcohol; 
       
-      
+      let response = await PartyAPI.Save(shortid.generate(), newParty);
 
   },
     
