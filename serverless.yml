@@ -90,6 +90,29 @@ functions:
           cors: true
 
   # party functions
+  CreateParty:
+    handler: handlers/party.Create
+    events: 
+      http:
+        method: POST
+        path: /CreateParty
+        cors: true
+
+  ViewParty:
+    handler: handlers/party.ViewParty
+    events:
+      http:
+        method: GET
+        path: /Party/{ID}
+        cors: true
+
+  ViewAllParties:
+    handler: handlers/party.ViewAllParties
+    events:
+      http:
+        method: GET
+        path: /Parties
+        cors: true
 
 #Tables for Users
 resources:
