@@ -208,6 +208,8 @@ resources:
             AttributeType: B
           - AttributeName: ServesAlcohol
             AttributeType: B
+          - AttributeName: Hardware
+            AttributeType: S
         KeySchema:
           - AttributeName: ID
             KeyType: HASH
