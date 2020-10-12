@@ -85,7 +85,7 @@ functions:
     handler: handlers/game.Create
     events:
       - http:
-          method: GET
+          method: POST
           path: /CreateGame
           cors: true
 
