@@ -1,7 +1,7 @@
 'use strict';
 
 // Imports
-const AccountAPI = require("../services/AccountAPI");
+const PartyAPI = require("../services/PartyAPI");
 const moment = require("moment-timezone");
 const responseUtil = require("../utilities/response");
 const { v4: uuidv4, stringify } = require('uuid');
