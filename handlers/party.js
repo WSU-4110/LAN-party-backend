@@ -1,8 +1,8 @@
 'use strict';
 
 // Imports
-const PartyAPI = require("../services/PartyAPI");
-const responseUtil = require("../utilities/response");
+const PartyAPI = require("../Services/PartyAPI.js");
+const responseUtil = require("../utilities/response.js");
 const shortid = require("shortid");
 
 
@@ -15,52 +15,43 @@ module.exports = {
         return responseUtil.Build(204, 'Event is empty');
       };
 
-      //Parse the event into a request
-      let request = JSON.parse(event);
-
+      let request = JSON.parse(event.body);
       //A party's name is valid if it has a number or letter.
-      let nameChars = /'[0-9]*[A-Z]*[a-z]'/
-      if (!request.name || !nameChars.test(request.name)){
+      const nameChars = /\w/;
+
+      if (typeof request.name === undefined || !nameChars.test(request.name)){
         return responseUtil.Build(403, 'Party must have a name with letters or numbers');
       };
 
       //Ensure that the party has a location
-      if(!request.location){
+      if(typeof request.location === undefined){
         return responseUtil.Build(403, 'Party must have a location');
       };
 
       //Ensure that the party has a time
-      if (!request.time){
+      if (typeof request.time === undefined){
         return responseUtil.Build(403, 'Party must have a time');
       };
-
-      //Ensure all data on the item is what we need
-      let newParty = {};
-      newParty.Name = request.name;
-      newParty.Host = request.user; //Host is the user making the request.
-      newParty.Games = null;
-      newParty.Location = request.location;
-      newParty.Time = request.time;
-      newParty.Attendees = [newParty.Host];
-      newParty.AgeGate = request.ageGate;
-      newParty.ServesAlcohol = request.servesAlcohol; 
       
-      let response = await PartyAPI.Save(shortid.generate(), newParty);
+      let response = await PartyAPI.Save(shortid.generate(), request);
+
+      response.message = 'Created!';
+      return responseUtil.Build(200, response);
 
   },
     
   // UPDATE A PARTY //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  Update: async function (event) {
+  Update: async function (events) {
 
   },
 
   // GET A PARTY BY AN ID //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  Get: async function (event) {
+  Get: async function (events) {
 
   },
 
   // GET ALL OF THE PARTIES //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  GetAll: async function (event) {
+  GetAll: async function (events) {
 
   }
 };

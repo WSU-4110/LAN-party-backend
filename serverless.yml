@@ -5,8 +5,8 @@
 
 service: only-lans
 # app and org for use with dashboard.serverless.com
-#app: your-app-name
-#org: your-org-name
+app: lan-party
+org: jarredc
 
 # we can pin our service to only deploy with a specific Serverless version
 frameworkVersion: '2'
@@ -93,34 +93,34 @@ functions:
   CreateParty:
     handler: handlers/party.Create
     events: 
-      http:
-        method: POST
-        path: /CreateParty
-        cors: true
+      - http:
+          method: POST
+          path: /CreateParty
+          cors: true
 
   ViewParty:
     handler: handlers/party.Get
     events:
-      http:
-        method: GET
-        path: /Party/{ID}
-        cors: true
+      - http:
+          method: GET
+          path: /Party/{ID}
+          cors: true
 
   ViewAllParties:
     handler: handlers/party.GetAll
     events:
-      http:
-        method: GET
-        path: /Parties
-        cors: true
+      - http:
+          method: GET
+          path: /Parties
+          cors: true
   
   UpdateParty:
     handler: handlers/party.Update
     events:
-      http:
-        method: POST
-        path: /Party/{ID}/Update
-        cors: true
+      - http:
+          method: POST
+          path: /Party/{ID}/Update
+          cors: true
 
 #Tables for Users
 resources:
@@ -196,19 +196,9 @@ resources:
             AttributeType: S
           - AttributeName: Host
             AttributeType: S
-          - AttributeName: Attendees
-            AttributeType: SS
-          - AttributeName: Games
-            AttributeType: SS
           - AttributeName: Location
             AttributeType: S
           - AttributeName: Time
-            AttributeType: S
-          - AttributeName: AgeGate
-            AttributeType: B
-          - AttributeName: ServesAlcohol
-            AttributeType: B
-          - AttributeName: Hardware
             AttributeType: S
         KeySchema:
           - AttributeName: ID
@@ -229,6 +219,12 @@ resources:
           - IndexName: Time
             KeySchema:
               - AttributeName: Time
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: Host
+            KeySchema:
+              - AttributeName: Host
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
