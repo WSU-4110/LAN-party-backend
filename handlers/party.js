@@ -2,6 +2,7 @@
 
 // Imports
 const PartyAPI = require("../Services/PartyAPI.js");
+const AccountAPI = require("../Services/AccountAPI");
 const responseUtil = require("../utilities/response.js");
 const shortid = require("shortid");
 
@@ -24,14 +25,19 @@ module.exports = {
       };
 
       //Ensure that the party has a location
-      if(typeof request.location === undefined){
+      if(typeof request.location === undefined || request.location != ''){
         return responseUtil.Build(403, 'Party must have a location');
       };
 
       //Ensure that the party has a time
-      if (typeof request.time === undefined){
+      if (typeof request.time === undefined || request.location != ''){
         return responseUtil.Build(403, 'Party must have a time');
       };
+
+      //Ensure that the ID is done right
+      if (typeof request.host === undefined || !AccountAPI.Get(request.host)){
+        return responseUtil.Build(403, 'Host is invalid');
+      }
       
       let response = await PartyAPI.Save(shortid.generate(), request);
 
