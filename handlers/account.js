@@ -33,11 +33,14 @@ module.exports = {
             // let's have a create date for our new account
             request.CreateDate = moment().toISOString();
 
-            // let's check and see if the user already has an account
+            // let's check and see if this email is already being used
             let exists = await AccountAPI.GetByEmail(request.Email);
 
-            // if they don't already have an account then we can make them one
-            if (!exists) {
+            // let's check and see if this username is already used
+            let exists2 = await AccountAPI.GetByUsername(request.Username);
+
+            // if the entered 
+            if (!exists && !exists2) {
                 let AccountID = request.ID ? request.ID : false;
                 await AccountAPI.Save(AccountID, request);
 
