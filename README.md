@@ -6,7 +6,8 @@ This is the backend code for our app. We are using Serverless and DynamoDB.
 - Jarred Crull, gj3842@wayne.edu
 - Randall Smith, er3586@wayne.edu
 
-# How to install
+# Sprint 1
+Find the front end here: https://github.com/WSU-4110/LAN-party-frontend
 
-# How to test
-Insomina. You can also use our front-end code that was made with React. Find it here: https://github.com/WSU-4110/LAN-party-frontend
+# Sprint 2 and 3
+Find both front and backend here: https://github.com/WSU-4110/LAN-Party-App
